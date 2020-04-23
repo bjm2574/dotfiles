@@ -39,7 +39,7 @@ brew install wget --with-iri
 brew install gnupg
 
 # Install more recent versions of some macOS tools.
-brew install vim --with-override-system-vi
+brew install vim 
 brew install grep
 brew install openssh
 brew install screen
@@ -84,7 +84,7 @@ brew install ack
 brew install git
 brew install git-lfs
 brew install gs
-brew install imagemagick --with-webp
+brew install imagemagick 
 brew install lua
 brew install lynx
 brew install p7zip
@@ -96,6 +96,16 @@ brew install ssh-copy-id
 brew install tree
 brew install vbindiff
 brew install zopfli
+
+# Install my software
+brew cask install google-drive-file-stream
+brew cask install visual-studio-code
+brew cask install karabiner-elements
+brew cask install docker
+brew cask install microsoft-team
+brew cask install homebrew/cask-versions/firefox-developer-edition
+brew cask install vmware-fusion
+brew install android-file-transfer
 
 # Remove outdated versions from the cellar.
 brew cleanup
