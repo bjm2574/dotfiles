@@ -72,6 +72,8 @@ plugins=(
     git
     osx
     docker
+    python
+    brew
   )
 
 source $ZSH/oh-my-zsh.sh
