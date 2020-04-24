@@ -23,8 +23,8 @@ brew install findutils
 # Install GNU `sed`, overwriting the built-in `sed`.
 brew install gnu-sed
 # Install a modern version of Bash.
-brew install bash
-brew install bash-completion2
+# brew install bash
+# brew install bash-completion2
 
 # Switch to using brew-installed bash as default shell
 if ! fgrep -q "${BREW_PREFIX}/bin/bash" /etc/shells; then
@@ -106,6 +106,6 @@ brew cask install microsoft-teams
 brew cask install homebrew/cask-versions/firefox-developer-edition
 brew cask install vmware-fusion
 brew cask install android-file-transfer
-
+brew cask install iterm2
 # Remove outdated versions from the cellar.
 brew cleanup
