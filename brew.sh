@@ -14,7 +14,7 @@ BREW_PREFIX=$(brew --prefix)
 # Install GNU core utilities (those that come with macOS are outdated).
 # Don’t forget to add `$(brew --prefix coreutils)/libexec/gnubin` to `$PATH`.
 brew install coreutils
-ln -s "${BREW_PREFIX}/bin/gsha256sum" "${BREW_PREFIX}/bin/sha256sum"
+# ln -s "${BREW_PREFIX}/bin/gsha256sum" "${BREW_PREFIX}/bin/sha256sum"
 
 # Install some other useful utilities like `sponge`.
 brew install moreutils
@@ -42,9 +42,9 @@ brew install gnupg
 brew install vim 
 brew install grep
 brew install openssh
-brew install screen
-brew install php
-brew install gmp
+# brew install screen
+# brew install php
+# brew install gmp
 
 # Install font tools.
 brew tap bramstein/webfonttools
@@ -98,14 +98,14 @@ brew install vbindiff
 brew install zopfli
 
 # Install my software
-brew cask install google-drive-file-stream
+# brew cask install google-drive-file-stream
 brew cask install visual-studio-code
 brew cask install karabiner-elements
-brew cask install docker
+# brew cask install docker
 brew cask install microsoft-teams
-brew cask install homebrew/cask-versions/firefox-developer-edition
-brew cask install vmware-fusion
-brew cask install android-file-transfer
+# brew cask install homebrew/cask-versions/firefox-developer-edition
+# brew cask install vmware-fusion
+# brew cask install android-file-transfer
 brew cask install iterm2
 # Remove outdated versions from the cellar.
 brew cleanup
