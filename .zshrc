@@ -73,9 +73,9 @@ plugins=(
     osx
     docker
     python
+    emacs
     brew
-    vi-mode
-  )
+    )
 
 source $ZSH/oh-my-zsh.sh
 
