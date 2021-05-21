@@ -100,12 +100,12 @@ brew install zopfli
 # Install my software
 # brew cask install google-drive-file-stream
 brew cask install visual-studio-code
-brew cask install karabiner-elements
+# brew cask install karabiner-elements
 # brew cask install docker
-brew cask install microsoft-teams
+brew install microsoft-teams
 # brew cask install homebrew/cask-versions/firefox-developer-edition
 # brew cask install vmware-fusion
 # brew cask install android-file-transfer
-brew cask install iterm2
+# brew install iterm2
 # Remove outdated versions from the cellar.
 brew cleanup
