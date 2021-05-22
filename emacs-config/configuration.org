@@ -84,17 +84,6 @@ And force the install of missing packages.
     (setq helm-lisp-fuzzy-completion t)
     (setq helm-bookmark-show-location t))
 #+END_SRC
-** Imenu + Helm with =imenu-anywhere=
-But I find pulling from other buffer confusing so I limit to current buffer
-#+BEGIN_SRC emacs-lisp
-  (defun imenu-anywhere-same-buffer-p (current other)
-    (eq current other))
-
-  (use-package imenu-anywhere
-    :bind (("C-c C-i" . helm-imenu-anywhere))
-    :config (setq imenu-anywhere-buffer-filter-functions
-                  '(imenu-anywhere-same-buffer-p)))
-#+END_SRC
 ** Install =helm-system-packages=
 #+BEGIN_SRC emacs-lisp
   (use-package helm-system-packages)
@@ -130,15 +119,6 @@ For interactions with github.
 
 
 * Utility functions
-** Generate scratch buffer
-#+BEGIN_SRC emacs-lisp
-(defun generate-scratch-buffer ()
-  "Create and switch to a temporary scratch buffer with a random
-     name."
-  (interactive)
-  (switch-to-buffer (make-temp-name "scratch-")))
-#+END_SRC
-
 ** Sudo the current buffer
 #+BEGIN_SRC emacs-lisp
 (defun sudo ()
@@ -241,61 +221,11 @@ I put a double space in between what I want to align and call this:
     (replace-string var name nil (region-beginning) (region-end))))
 #+END_SRC
 
-** Increment/decrement number at point
-I miss that from Vim
-#+BEGIN_SRC emacs-lisp
-  (defun increment-number-at-point ()
-    (interactive)
-    (skip-chars-backward "0-9")
-    (or (looking-at "[0-9]+")
-        (error "No number at point"))
-    (replace-match (number-to-string (1+ (string-to-number (match-string 0))))))
-
-  (defun decrement-number-at-point ()
-    (interactive)
-    (skip-chars-backward "0-9")
-    (or (looking-at "[0-9]+")
-        (error "No number at point"))
-    (replace-match (number-to-string (- (string-to-number (match-string 0)) 1))))
-#+END_SRC
-
-** Comment a line
-Before Emacs 25.1
-#+BEGIN_SRC emacs-lisp
-  (defun comment-line ()
-    (interactive)
-    (save-excursion
-      (end-of-line)
-      (set-mark (point))
-      (beginning-of-line)
-      (if (comment-only-p (region-beginning) (region-end))
-          (uncomment-region (region-beginning) (region-end))
-        (comment-region (region-beginning) (region-end)))))
-#+END_SRC
-
 ** Quickly edit this config file
 #+BEGIN_SRC emacs-lisp
   (defun edit-config-file ()
     (interactive)
     (find-file (concat config-load-path "configuration.org")))
-#+END_SRC
-
-** Send the current selection in an email
-This uses mutt.
-#+BEGIN_SRC emacs-lisp
-  (defun email-selection ()
-    (interactive)
-    (copy-region-as-kill (region-beginning) (region-end))
-    (let ((tmp-file (concat "/tmp/" (buffer-name (current-buffer))))
-          (recipient (read-string "Enter a recipient: "))
-          (subject (read-string "Enter a subject: ")))
-      (find-file tmp-file)
-      (yank)
-      (save-buffer)
-      (kill-buffer (current-buffer))
-      (shell-command (concat "mutt -s \"" subject "\" " recipient " < " tmp-file))
-      (shell-command (concat "rm -f " tmp-file)))
-    (message "Sent!"))
 #+END_SRC
 
 ** Move files more intuitively
@@ -323,23 +253,6 @@ This uses mutt.
     (insert (file-relative-name (read-file-name "File: "))))
 #+END_SRC
 
-** Format long function parameter list into multiline
-#+BEGIN_SRC emacs-lisp
-  (defun format-function-parameters ()
-    "Turn the list of function parameters into multiline."
-    (interactive)
-    (beginning-of-line)
-    (search-forward "(" (line-end-position))
-    (newline-and-indent)
-    (while (search-forward "," (line-end-position) t)
-      (newline-and-indent))
-    (end-of-line)
-    (c-hungry-delete-forward)
-    (insert " ")
-    (search-backward ")")
-    (newline-and-indent))
-#+END_SRC
-
 ** Eshell here
 Thanks to Howard https://github.com/howardabrams/dot-files/blob/master/emacs-eshell.org
 #+BEGIN_SRC emacs-lisp
@@ -356,30 +269,6 @@ Thanks to Howard https://github.com/howardabrams/dot-files/blob/master/emacs-esh
       (eshell-send-input)))
 
   (bind-key "C-!" 'eshell-here)
-#+END_SRC
-
-** Show pwd relative to current project
-And copy to clipboard
-#+BEGIN_SRC emacs-lisp
-  (defun relative-pwd ()
-    (interactive)
-    (let* ((prj (cdr (project-current)))
-           (current-file buffer-file-truename)
-           (prj-name (file-name-as-directory (file-name-nondirectory (directory-file-name prj))))
-           (output (concat prj-name (file-relative-name current-file prj))))
-      (kill-new output)
-      (message output)))
-#+END_SRC
-
-** Add JIRA ticket number to commit messages
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'git-commit-setup-hook
-      '(lambda ()
-          (let ((has-ticket-title (string-match "^[A-Z]+-[0-9]+"
-                                      (magit-get-current-branch)))
-                (words (s-split-words (magit-get-current-branch))))
-            (if has-ticket-title
-                (insert (format "[%s-%s] " (car words) (car (cdr words))))))))
 #+END_SRC
 
 ** Get my public IP
@@ -429,12 +318,6 @@ Useful if file changed on disk
 ** Hungry delete forward available everywhere
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "C-c d") 'c-hungry-delete-forward)
-#+END_SRC
-
-# # ** Increment number easily
-# #+BEGIN_SRC emacs-lisp
-  # (global-set-key (kbd "C-c +") 'increment-number-at-point)
-  # (global-set-key (kbd "C-c -") 'decrement-number-at-point)
 #+END_SRC
 
 ** Comment the current line
@@ -589,16 +472,9 @@ Make org files a bit more readable
 ;; Include current clocking task in clock reports
 (setq org-clock-report-include-clocking-task t)
 ;; use pretty things for the clocktable
-(setq org-pretty-entities t)
+(setq org-pretty-entities nil)
 
 #+END_SRC
-** Prevent editing invisible text
-#+BEGIN_SRC emacs-lisp
-  (setq org-catch-invisible-edits 'show-and-error)
-#+END_SRC
-
-#+RESULTS:
-: t
 
 * Register RSS feeds
 Uses =elfeed= and =elfeed-org=
@@ -720,9 +596,6 @@ Inspired from [[https://github.com/technomancy/better-defaults]]
   (set-face-background 'mode-line "#510370")
   (set-face-background 'mode-line-inactive "#212020"))
 #+END_SRC
-
-#+RESULTS:
-: t
 
 * Customize the mode-line
 ** A small trim of the original
@@ -952,12 +825,6 @@ But with a margin of 5
 #+BEGIN_SRC emacs-lisp
 (use-package neotree)
 #+END_SRC
-** Enable =ibuffer=
-#+BEGIN_SRC emacs-lisp
-(use-package ibuffer-vc)
-(use-package ibuffer-git)
-(define-key global-map (kbd "C-x C-b") 'ibuffer)
-#+END_SRC
 ** Enable =yascroll=
 So much better than the default scroll bar
 #+BEGIN_SRC emacs-lisp
@@ -988,18 +855,6 @@ Not all the time, but handy.
   (use-package hamburger-menu
     :config (setq mode-line-front-space 'hamburger-menu-mode-line))
 #+END_SRC
-** Enable =origiami=
-Great to fold text
-#+BEGIN_SRC emacs-lisp
-  (use-package origami
-    :config
-    (global-set-key (kbd "C-c n o") 'origami-open-node)
-    (global-set-key (kbd "C-c n c") 'origami-close-node)
-    (global-set-key (kbd "C-c n a") 'origami-open-all-nodes)
-    (global-set-key (kbd "C-c n u") 'origami-undo)
-    (global-set-key (kbd "C-c n n") 'origami-show-only-node)
-    (global-set-key (kbd "C-c n TAB") 'origami-recursively-toggle-node))
-#+END_SRC
 ** Enable =eyebrowse=
 To manage window configuration
 #+BEGIN_SRC emacs-lisp
@@ -1029,32 +884,6 @@ Useful to edit multiple similar lines
     :diminish whole-line-or-region-global-mode
     :config (whole-line-or-region-global-mode t))
 #+END_SRC
-** COMMENT Enable =viking-mode=
-And add my personal twist to it.
-#+BEGIN_SRC emacs-lisp
-  ;; (use-package viking-mode
-  ;;   :diminish viking-mode
-  ;;   :config
-  ;;   (viking-global-mode)
-  ;;   (setq viking-greedy-kill nil)
-  ;;   (setq viking-enable-region-kill t)
-  ;;   (setq viking-kill-functions (list '(lambda()
-  ;;                                        (if (region-active-p)
-  ;;                                            (kill-region (region-beginning) (region-end))
-  ;;                                        (delete-char 1 t)))
-  ;;                                     '(lambda()
-  ;;                                        (insert (pop kill-ring)) ;; insert the char back
-  ;;                                        (kill-new "") ;; start a new entry in the kill-ring
-  ;;                                        (viking-kill-word)
-  ;;                                        (kill-append " " nil)) ;; append the extra space
-  ;;                                     'viking-kill-line-from-point
-  ;;                                     'viking-kill-line
-  ;;                                     'viking-kill-paragraph
-  ;;                                     'viking-kill-buffer)))
-#+END_SRC
-
-#+RESULTS:
-| (lambda nil (if (region-active-p) (kill-region (region-beginning) (region-end)) (delete-char 1 t))) | (lambda nil (insert (pop kill-ring)) (kill-new ) (viking-kill-word) (kill-append   nil)) | viking-kill-line-from-point | viking-kill-line | viking-kill-paragraph | viking-kill-buffer |
 
 ** Enable =undo-tree=
 #+BEGIN_SRC emacs-lisp
@@ -1074,13 +903,6 @@ Sweet minor mode for providing visual feedback
   (vhl/define-extension 'undo-tree 'undo-tree-yank 'undo-tree-move)
   (vhl/install-extension 'undo-tree)
   (volatile-highlights-mode t))
-#+END_SRC
-
-** Enable =ciel=
-#+BEGIN_SRC emacs-lisp
-(use-package ciel
-  :bind (("C-c i" . ciel-ci)
-         ("C-c o" . ciel-co)))
 #+END_SRC
 
 ** Enable =fancy-narrow=
@@ -1143,34 +965,6 @@ Add a little helm twist to it
   :bind ("C-c f" . helm-flycheck))
 #+END_SRC
 
-** Enable =electric-operator=
-And add a couple of rules for PHP and JS
-#+BEGIN_SRC emacs-lisp
-  (use-package electric-operator
-    :config
-    (electric-operator-add-rules-for-mode 'php-mode
-                                          (cons " - >" "->"))
-    (electric-operator-add-rules-for-mode 'php-mode
-                                          (cons " / /" "// "))
-    (electric-operator-add-rules-for-mode 'php-mode
-                                          (cons " = > " " => "))
-    (electric-operator-add-rules-for-mode 'php-mode
-                                          (cons " < ?" "<?"))
-    (electric-operator-add-rules-for-mode 'js2-mode
-                                          (cons " = > " " => "))
-    (electric-operator-add-rules-for-mode 'js2-jsx-mode
-                                          (cons " = > " " => "))
-    (electric-operator-add-rules-for-mode 'rjsx-mode
-                                          (cons " = > " " => ")))
-#+END_SRC
-
-** Enable =dumb-jump=
-Great package to jump to definition
-#+BEGIN_SRC emacs-lisp
-  (use-package dumb-jump
-    :config (setq dumb-jump-aggressive nil))
-#+END_SRC
-
 ** Enable =highlight-numbers=
 Make numbers in source code more noticeable
 #+BEGIN_SRC emacs-lisp
@@ -1211,58 +1005,6 @@ But only for emacs-lisp
 #+BEGIN_SRC emacs-lisp
   (use-package suggest)
 #+END_SRC
-* MySQL
-** Always make MySQL the default product
-#+BEGIN_SRC emacs-lisp
-(require 'sql)
-(sql-set-product "mysql")
-#+END_SRC
-** Enable =sqlup-mode=
-#+BEGIN_SRC emacs-lisp
-(use-package sqlup-mode
-  :config (add-hook 'sql-mode-hook 'sqlup-mode))
-#+END_SRC
-** Enable =mysql-to-org=
-I love this package
-#+BEGIN_SRC emacs-lisp
-(use-package mysql-to-org
-  :config
-  (add-hook 'sql-mode-hook 'mysql-to-org-mode))
-#+END_SRC
-# * PHP
-# ** Enable =php-mode=
-# And a bunch of hooks with it
-# And set PSR-2 as coding style
-# #+BEGIN_SRC emacs-lisp
-#   (use-package php-mode
-#     :config
-#     (add-hook 'php-mode-hook 'flycheck-mode)
-#     (add-hook 'php-mode-hook 'electric-operator-mode)
-#     (add-hook 'php-mode-hook 'dumb-jump-mode)
-#     (add-hook 'php-mode-hook 'php-enable-psr2-coding-style))
-# #+END_SRC
-# ** Enable =company-php=
-# #+BEGIN_SRC emacs-lisp
-#   (use-package company-php
-#     :config
-#     (add-hook 'php-mode-hook 'company-mode)
-#     (add-hook 'php-mode-hook '(lambda ()
-#                                 (if (not (member 'php-mode company-dabbrev-code-modes))
-#                                     (add-to-list 'company-dabbrev-code-modes 'php-mode)))))
-# #+end_SRC
-# ** Enable =php-eldoc=
-# #+BEGIN_SRC emacs-lisp
-#   (setq auto-complete-mode nil) ;; Hack while my PR is pending
-#   (use-package php-eldoc
-#     :diminish eldoc-mode
-#     :config (add-hook 'php-mode-hook 'php-eldoc-enable))
-# #+END_SRC
-# ** Enable =phpcbf=
-# #+BEGIN_SRC emacs-lisp
-#   (use-package phpcbf
-#     :config (setq phpcbf-standard "PSR2"))
-# #+END_SRC
-
 * Web
 ** Enable =web-mode=
 So much better than =html-mode=
@@ -1273,74 +1015,6 @@ So much better than =html-mode=
   :mode "\\.html\\'")
 #+END_SRC
 
-** Enable =emmet-mode=
-Adding the necessary hooks
-#+BEGIN_SRC emacs-lisp
-  (use-package emmet-mode
-    :config
-    (add-hook 'sgml-mode-hook 'emmet-mode) ;; Auto-start on any markup modes
-    (add-hook 'css-mode-hook  'emmet-mode) ;; enable Emmet's css abbreviation.
-    )
-#+END_SRC
-
-* Javascript
-** Enable =js2-mode=
-#+BEGIN_SRC emacs-lisp
-  (use-package js2-mode
-    :mode "\\.js\\'"
-    :config
-    (add-hook 'js2-mode-hook 'electric-operator-mode)
-    (add-hook 'js2-mode-hook 'flycheck-mode)
-    (setq js2-basic-offset 2))
-#+END_SRC
-** Enable =js2-refactor=
-#+BEGIN_SRC emacs-lisp
-  (use-package js2-refactor
-    :diminish js2-refactor-mode
-    :defer t
-    :config
-    (add-hook 'js2-mode-hook #'js2-refactor-mode)
-    (js2r-add-keybindings-with-prefix "C-c C-m"))
-#+END_SRC
-** Enable =js-doc=
-#+BEGIN_SRC emacs-lisp
-  (use-package js-doc)
-#+END_SRC
-** Enable =rjsx-mode=
-Useful for React
-#+BEGIN_SRC emacs-lisp
-  (use-package rjsx-mode)
-#+END_SRC
-* Typescript
-** Enable =tide=
-#+BEGIN_SRC emacs-lisp
-  (use-package tide)
-
-  (defun setup-tide-mode ()
-    (interactive)
-    (tide-setup)
-    (flycheck-mode +1)
-    (setq flycheck-check-syntax-automatically '(save mode-enabled))
-    (eldoc-mode +1)
-    (tide-hl-identifier-mode +1)
-    (company-mode +1))
-
-  ;; formats the buffer before saving
-  (add-hook 'before-save-hook 'tide-format-before-save)
-
-  (add-hook 'typescript-mode-hook #'setup-tide-mode)
-#+END_SRC
-** Enable =tide= for =tsx=
-#+begin_src emacs-lisp
-  (use-package web-mode)
-  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
-  (add-hook 'web-mode-hook
-            (lambda ()
-              (when (string-equal "tsx" (file-name-extension buffer-file-name))
-                (setup-tide-mode))))
-  ;; enable typescript-tslint checker
-  (flycheck-add-mode 'typescript-tslint 'web-mode)
-#+end_src
 * SML
 Setup sml-mode for dgrossman class
 #+BEGIN_SRC emacs-lisp
@@ -1348,14 +1022,6 @@ Setup sml-mode for dgrossman class
 #+END_SRC
 
 #+RESULTS:
-* SML
-Setup sml-mode for dgrossman class
-#+BEGIN_SRC emacs-lisp
-  (use-package sml-mode)
-#+END_SRC
-
-#+RESULTS:
-
 * Go
 A lot of the config is based on gocode, godef, goimports and gotags
 packages that you should install separately.
@@ -1661,16 +1327,12 @@ Thanks to http://www.howardism.org/Technical/Emacs/eshell-present.html
 No need to configure, just handy to have.
 #+BEGIN_SRC emacs-lisp
 
-  (use-package 2048-game)
-  (use-package isend-mode)
-  (use-package lorem-ipsum)
   (use-package markdown-mode)
   (use-package pdf-tools
     :defer t)
   (use-package refine)
   (use-package request)
   (use-package csv-mode)
-  ;; (use-package csharp-mode)
   (use-package keychain-environment)
   (use-package prodigy)
   (use-package vlf)
@@ -1680,15 +1342,6 @@ No need to configure, just handy to have.
   (use-package mermaid-mode)
 
 #+END_SRC
-
-* Extra file loading
-If I am working on a separate library, I like to have it loaded on start.
-Just need to place it in the extra folder.
-#+BEGIN_SRC emacs-lisp
-  (use-package load-dir
-    :config (setq load-dirs (concat config-load-path "extra/")))
-#+END_SRC
-
 
 * Cheat Sheet
 Thanks to the =cheatsheet= package, I can quickly see what are my favorite keys bindings
