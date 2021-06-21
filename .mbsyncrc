@@ -1,0 +1,76 @@
+IMAPAccount gmail
+Host imap.gmail.com
+User bjm@bradjm.io
+Pass zdqdrxiirtuxwmkb
+SSLType IMAPS
+AuthMechs Login
+
+IMAPStore gmail-remote
+Account gmail
+
+MaildirStore gmail-local
+Subfolders Verbatim
+Path ~/Mail/gmail/
+Inbox ~/Mail/gmail/INBOX
+
+Channel gmail
+Far :gmail-remote:
+Near :gmail-local:
+Patterns * ![Gmail]* "[Gmail]/Sent" "[Gmail]/Spam" "[Gmail]/All Mail" "[Gmail]/Trash"
+CopyArrivalDate yes
+Create Both
+SyncState *
+
+IMAPAccount apple
+Host imap.mail.me.com
+Port 993
+User bradmitchell@me.com
+Pass khab-udhb-luku-ncbu
+SSLType IMAPS
+AuthMechs Login
+SSLVersions TLSv1.2
+
+IMAPStore apple-remote
+Account apple
+
+MaildirStore apple-local
+SubFolders Verbatim
+Path ~/Mail/apple/
+Inbox ~/Mail/apple/INBOX
+
+Channel apple
+Far :apple-remote:
+Near :apple-local:
+Patterns *
+Expunge Both
+CopyArrivalDate yes
+Sync All
+Create Both
+SyncState *
+
+IMAPAccount terillium
+Host outlook.office365.com
+Port 993
+User bmitchell@terillium.com
+Pass crbnfdsmqcvbxwsc
+SSLType IMAPS
+AuthMechs Login
+SSLVersions TLSv1.2
+
+IMAPStore terillium-remote
+Account terillium
+
+MaildirStore terillium-local
+SubFolders Verbatim
+Path ~/Mail/terillium/
+Inbox ~/Mail/terillium/INBOX
+
+Channel terillium
+Far :terillium-remote:
+Near :terillium-local:
+Patterns *
+Expunge Both
+CopyArrivalDate yes
+Sync All
+Create Both
+SyncState *
