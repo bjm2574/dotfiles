@@ -29,7 +29,7 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/org/")
+(setq org-directory "~/Documents/org/")
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -53,102 +53,3 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
-;; Begin my customizations BJM 6/19/2021
-
-;; Mu4e options
-(after! mu4e
-  (setq mu4e-change-filenames-when-moving t)
-
-  ;; Refresh mail using isync every 10 minutes
-  (setq mu4e-update-interval (* 2 60))
-  (setq mu4e-get-mail-command "mbsync -a")
-  (setq mu4e-maildir "~/Mail")
-  (setq message-send-mail-function 'smtpmail-send-it)
-
-  (setq mu4e-contexts
-        (list
-         (make-mu4e-context
-          :name "google"
-          :match-func
-            (lambda (msg)
-              (when msg
-                (string-prefix-p "/gmail" (mu4e-message-field msg :maildir))))
-          :vars '((user-mail-address . "bjm@bradjm.io")
-                  (user-full-name    . "Brad Mitchell")
-                  (smtpmail-smtp-server  . "smtp.gmail.com")
-                  (smtpmail-smtp-service . 587)
-                  (smtpmail-smtp-user . "bjm@bradjm.io")
-                  (smtpmail-smtp-type    . starttls)
-                  (mu4e-drafts-folder  . "/gmail/[Gmail]/Drafts")
-                  (mu4e-sent-folder  . "/gmail/[Gmail]/Sent")
-                  (mu4e-refile-folder  . "/gmail/[Gmail]/All Mail")
-                  (mu4e-trash-folder  . "/gmail/[Gmail]/Trash")))
-
-         ;; Personal account
-         (make-mu4e-context
-          :name "terillium"
-          :match-func
-            (lambda (msg)
-              (when msg
-                (string-prefix-p "/terillium" (mu4e-message-field msg :maildir))))
-          :vars '((user-mail-address . "bmitchell@terillium.com")
-                  (user-full-name    . "Brad Mitchell")
-                  (smtpmail-smtp-server  . "smtp.office365.com")
-                  (smtpmail-smtp-service . 587)
-                  (smtpmail-smtp-user . "bmitchell@terillium.com")
-                  ;; (smtpmail-smtp-type    . starttls)
-                  (mu4e-drafts-folder  . "/terillium/Drafts")
-                  (mu4e-sent-folder  . "/terillium/Sent")
-                  (mu4e-refile-folder  . "/terillium/Archive")
-                  (mu4e-trash-folder  . "/terillium/Trash")))
-
-         ;; Personal account
-         (make-mu4e-context
-          :name "apple"
-          :match-func
-            (lambda (msg)
-              (when msg
-                (string-prefix-p "/apple" (mu4e-message-field msg :maildir))))
-          :vars '((user-mail-address . "bradmitchell@me.com")
-                  (user-full-name    . "Brad Mitchell")
-                  (smtpmail-smtp-server  . "smtp.mail.me.com")
-                  (smtpmail-smtp-service . 587)
-                  (smtpmail-smtp-user . "bradmitchell@me.com")
-                  (smtpmail-smtp-type    . starttls)
-                  (mu4e-drafts-folder  . "/apple/Drafts")
-                  (mu4e-sent-folder  . "/apple/Sent")
-                  (mu4e-refile-folder  . "/apple/Archive")
-                  (mu4e-trash-folder  . "/apple/Trash"))))))
-
-
-;; (setq mu4e-bookmarks
-      ;; '("m:/terillium/INBOX or m:/gmail/INBOX or m:/apple/INBOX" . ?i))
-
-  (setq mu4e-maildir-shortcuts
-        '(("/gmail/INBOX"      . ?g)
-         ("/terillium/INBOX" . ?t)
-         ("/apple/INBOX"     . ?a)))
-
-(setq mail-user-agent 'gnus-user-agent)
- (require 'org-msg)
- (setq org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil author:nil email:nil \\n:t"
-	org-msg-startup "hidestars indent inlineimages"
-	org-msg-greeting-fmt "\nHi %s,\n\n"
-	org-msg-recipient-names '(("bjm@bradjm.io" . "Brad"))
-	org-msg-greeting-name-limit 3
-	org-msg-default-alternatives '((new		. (text html))
-				       (reply-to-html	. (text html))
-				       (reply-to-text	. (text)))
-	org-msg-convert-citation t
-	org-msg-signature "
-
-Thanks,
-
-#+begin_signature
- --
-Brad Mitchell | Senior Consultant | Terillium
-www.terillium.com
-Cell: 615.506.7100
-bmitchell@terillium.com
-#+end_signature")
-(org-msg-mode)
