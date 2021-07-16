@@ -331,8 +331,8 @@ Useful if file changed on disk
 #+BEGIN_SRC emacs-lisp
   (use-package f)
   (use-package org)
-  (setq org-directory "~/org/")
-  (setq org-agenda-files (directory-files-recursively "~/org" "\.org$"))
+  (setq org-directory "~/Dropbox/org/")
+  (setq org-agenda-files (directory-files-recursively "~/Dropbox/org" "\.org$"))
 
 #+END_SRC
 ** Utility functions
@@ -475,19 +475,6 @@ Make org files a bit more readable
 (setq org-pretty-entities nil)
 
 #+END_SRC
-
-* Register RSS feeds
-Uses =elfeed= and =elfeed-org=
-#+BEGIN_SRC emacs-lisp
-(use-package elfeed
-  :bind ("C-x w" . elfeed))
-
-(use-package elfeed-org
-  :config
-  (setq rmh-elfeed-org-files (list (concat config-load-path "elfeed.org")))
-  (elfeed-org))
-#+END_SRC
-The last line uses the [[file:elfeed.org][elfeed.org]] file to register the feeds.
 
 
 * Startup behavior
@@ -651,7 +638,6 @@ There is surely a better way to do this.
   )
 #+END_SRC
 
-
 * Dictionary Configuration
 Because Windows sucks I have to do this to use =flyspell=
 #+BEGIN_SRC emacs-lisp
@@ -734,17 +720,6 @@ Thanks to [[https://github.com/magnars/.emacs.d/blob/master/defuns/editing-defun
 ** Define comment syntax
 #+BEGIN_SRC emacs-lisp
   (setq comment-start "#")
-#+END_SRC
-** Enable =poporg=
-   So I can comment code from an org-mode buffer
-   #+begin_src emacs-lisp
-     (use-package poporg
-       :bind (("C-c \"" . poporg-dwim)))
-   #+end_src
-** Enable =prog-fill=
-#+BEGIN_SRC emacs-lisp
-  (use-package prog-fill
-    :bind (("M-q" . prog-fill)))
 #+END_SRC
 * Parenthesis Support
 #+BEGIN_SRC emacs-lisp
